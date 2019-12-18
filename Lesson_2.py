@@ -123,7 +123,7 @@ def load_hh():
     #pprint(CURRENCY_DICT)
     df = pd.read_pickle('df.bin').fillna('')
     df = df.apply(convert_currency, axis=1)
-    print(df.head())
+    df.to_csv('hh_vacancies.csv')
 
 
 if __name__ == '__main__':
