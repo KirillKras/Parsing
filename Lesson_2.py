@@ -14,6 +14,7 @@ HEADERS = {
 
 CURRENCY_DICT = {}
 
+
 def get_hh_response(search_string):
     url = 'https://hh.ru/search/vacancy'
     params = {
@@ -60,7 +61,7 @@ def convert_compensation(compensation):
     return [min_compensation, max_compensation, currency]
 
 
-def get_page(get_url, search_string):
+def get_page():
     response = get_hh_response('Data scientist')
     bs = BeautifulSoup(response.text, 'lxml')
     return bs
@@ -89,27 +90,6 @@ def get_vacancies(bs):
     return vacancy_list, bs.find('a', {'data-qa': 'pager-next'}) and True
 
 
-def vacancies_to_df(vacancy_list):
-    return pd.DataFrame(vacancy_list)
-
-
-def save_hh():
-    have_page = True
-    vacancy_list = []
-    while have_page:
-        bs = get_page(get_hh_response, SEARCH_STRING, )
-        all_vacancies = bs.find('div', {'class': 'vacancy-serp'})
-        vc_lst, have_page = get_vacancies(bs)
-        vacancy_list.extend(vc_lst)
-        global PAGE_HH
-        PAGE_HH += 1
-        time.sleep(2)
-    df = vacancies_to_df(vacancy_list)
-    df.compensation_min = df.compensation_min.astype(float)
-    df.compensation_max = df.compensation_max.astype(float)
-    df.to_pickle('df.bin')
-
-
 def convert_currency(row):
     if row.compensation_min:
         row.compensation_min = row.compensation_min * CURRENCY_DICT[row.compensation_currency]
@@ -118,13 +98,26 @@ def convert_currency(row):
     return row
 
 
-def load_hh():
+def get_hh():
+    have_page = True
+    vacancy_list = []
+
+    while have_page:
+        bs = get_page()
+        vc_lst, have_page = get_vacancies(bs)
+        vacancy_list.extend(vc_lst)
+        global PAGE_HH
+        PAGE_HH += 1
+        time.sleep(2)
+
+    df = pd.DataFrame(vacancy_list)
+    df.compensation_min = df.compensation_min.astype(float)
+    df.compensation_max = df.compensation_max.astype(float)
+    df.fillna('', inplace=True)
     create_currency_dict()
-    #pprint(CURRENCY_DICT)
-    df = pd.read_pickle('df.bin').fillna('')
     df = df.apply(convert_currency, axis=1)
     df.to_csv('hh_vacancies.csv')
 
 
 if __name__ == '__main__':
-    load_hh()
+    get_hh()
