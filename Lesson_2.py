@@ -7,21 +7,12 @@ import time
 from pprint import pprint
 
 SEARCH_STRING = 'Data Scientist'
-PAGE_HH = 0
+PAGE = 0
 
 HEADERS = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15'}
 
 CURRENCY_DICT = {}
-
-
-def get_hh_response(search_string):
-    url = 'https://hh.ru/search/vacancy'
-    params = {
-        'text': search_string,
-        'page': PAGE_HH
-    }
-    return requests.get(url, params, headers=HEADERS)
 
 
 def create_currency_dict():
@@ -32,6 +23,24 @@ def create_currency_dict():
     for valute in bs_xml.find_all('Valute'):
         CURRENCY_DICT[valute.find('CharCode').text] = float(valute.Value.text.replace(',', '.'))
     CURRENCY_DICT['RUB'] = 1
+
+
+def get_hh_response(search_string):
+    url = 'https://hh.ru/search/vacancy'
+    params = {
+        'text': search_string,
+        'page': PAGE
+    }
+    return requests.get(url, params, headers=HEADERS)
+
+
+def get_sj_response(search_string):
+    url = 'https://www.superjob.ru/vacancy/search/'
+    params = {
+        'keywords': search_string,
+        'page': PAGE
+    }
+    return requests.get(url, params, headers=HEADERS)
 
 
 def convert_compensation(compensation):
@@ -62,7 +71,7 @@ def convert_compensation(compensation):
 
 
 def get_page():
-    response = get_hh_response('Data scientist')
+    response = get_hh_response(SEARCH_STRING)
     bs = BeautifulSoup(response.text, 'lxml')
     return bs
 
@@ -106,8 +115,8 @@ def get_hh():
         bs = get_page()
         vc_lst, have_page = get_vacancies(bs)
         vacancy_list.extend(vc_lst)
-        global PAGE_HH
-        PAGE_HH += 1
+        global PAGE
+        PAGE += 1
         time.sleep(2)
 
     df = pd.DataFrame(vacancy_list)
@@ -117,6 +126,10 @@ def get_hh():
     create_currency_dict()
     df = df.apply(convert_currency, axis=1)
     df.to_csv('hh_vacancies.csv')
+
+
+def get_sj():
+    get_page()
 
 
 if __name__ == '__main__':
