@@ -187,4 +187,4 @@ def get_sj(search_string):
 
 
 if __name__ == '__main__':
-    get_sj(SEARCH_STRING)
+    get_hh()
