@@ -1,4 +1,5 @@
 import re
+import random
 import datetime
 import pandas as pd
 import requests
@@ -6,11 +7,14 @@ from bs4 import BeautifulSoup
 import time
 from pprint import pprint
 
-SEARCH_STRING = 'аналитик'
+SEARCH_STRING = 'Data scientist'
 PAGE_HH = 0
 PAGE_SJ = 1
+#HEADERS = {
+#        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36'}
 HEADERS = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36'}
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15'
+}
 CURRENCY_DICT = {}
 
 
@@ -32,6 +36,7 @@ def get_hh_response(search_string):
     params = {
         'text': search_string,
         'page': PAGE_HH,
+        'L_save_area': 'true',
     }
     return requests.get(url, params, headers=HEADERS)
 
@@ -88,25 +93,26 @@ def get_page(get_response):
 
 def get_hh_vacancies(bs):
     vacancy_list = []
-    all_vacancies = bs.find('div', {'class': 'vacancy-serp'})
-    for elem in all_vacancies.contents:
-        if 'data-qa' in elem.attrs and 'vacancy-serp__vacancy' in elem.attrs['data-qa']:
-            position = elem.find('a', attrs={'class': 'bloko-link HH-LinkModifier'}).text
-            company = elem.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-employer'}).text
-            city = elem.find('span', attrs={'data-qa': 'vacancy-serp__vacancy-address'}).text
-            compensation = elem.find('div', attrs={'data-qa': 'vacancy-serp__vacancy-compensation'})
-            compensation_min, compensation_max, compensation_currency = convert_compensation(compensation)
-            vacancy_list.append(
-                {
-                    'position': position,
-                    'company': company,
-                    'city': city,
-                    'compensation_min': compensation_min,
-                    'compensation_max': compensation_max,
-                    'compensation_currency': compensation_currency
-                }
-            )
-    pprint(vacancy_list)
+    vacancies = bs.find_all('div', {'data-qa': 'vacancy-serp__vacancy'})
+    print(bs.find('span', {'class': 'bloko-button-group'}).text)
+    print(len(vacancies))
+    for elem in vacancies:
+        position = elem.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-title'}).text
+        company = elem.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-employer'}).text
+        city = elem.find('span', attrs={'data-qa': 'vacancy-serp__vacancy-address'}).text
+        compensation = elem.find('div', attrs={'data-qa': 'vacancy-serp__vacancy-compensation'})
+        compensation_min, compensation_max, compensation_currency = convert_compensation(compensation)
+        vacancy_list.append(
+            {
+                'position': position,
+                'company': company,
+                'city': city,
+                'compensation_min': compensation_min,
+                'compensation_max': compensation_max,
+                'compensation_currency': compensation_currency
+            }
+        )
+    #pprint(vacancy_list)
     return vacancy_list, bs.find('a', {'data-qa': 'pager-next'}) and True
 
 
@@ -155,7 +161,7 @@ def get_hh():
         vacancy_list.extend(vc_lst)
         global PAGE_HH
         PAGE_HH += 1
-        time.sleep(2)
+        time.sleep(random.randint(5, 15))
 
     df = pd.DataFrame(vacancy_list)
     df.compensation_min = df.compensation_min.astype(float)
