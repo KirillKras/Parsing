@@ -186,7 +186,94 @@ class VacancyParserHH(VacancyParserBase):
         return vacancy_list_all
 
 
+class VacancyParserSJ(VacancyParserBase):
+
+    def __init__(self, search_string='Data Scientist',
+                 url='https://www.superjob.ru/vacancy/search/',
+                 user_agent_header='chrome',
+                 parse_all=True, timer=random.randint(2, 6)):
+        super().__init__(search_string, user_agent_header)
+        self.url = url
+        self.parse_all = parse_all
+        self.timer = timer
+        self.__bs_pages = self.__get_pages()
+        if self.__bs_pages:
+            self._vacancy_list = self.__get_vacancy_bs()
+
+    def __get_pages(self):
+
+        def get_page(search_string):
+            params = {
+                'keywords': search_string,
+            }
+            url = requests.get(self.url, params, headers=self.user_agent_header).url
+            self.url = url.split('=')[0] + '=1'
+
+            def get_next_response(page_number):
+                params = {
+                    'page': page_number
+                }
+                response = requests.get(self.url, params=params, headers=self.user_agent_header)
+                return BeautifulSoup(response.text, 'lxml')
+
+            return get_next_response
+
+        get_page_func = get_page(self.search_string)
+
+        page_number = 1
+        bs_list = []
+        if self.parse_all:
+            has_page = True
+            while has_page:
+                bs = get_page_func(page_number)
+                bs_list.append(bs)
+                has_page = bs.find('a', {'rel': 'next'}) and True
+                page_number += 1
+        else:
+            bs = get_page_func(page_number)
+            bs_list.append(bs)
+        return bs_list
+
+    def __get_vacancy_bs(self):
+
+        vacancy_list_all = []
+
+        for bs in self.__bs_pages:
+
+            vacancy_list_page = []
+            vacancies = bs.find_all('div', {'class': '_3zucV _2GPIV f-test-vacancy-item i6-sc _3VcZr'})
+
+            for elem in vacancies:
+                position = elem.find('div', {'class': '_3mfro CuJz5 PlM3e _2JVkc _3LJqf'}).text
+                company = elem.find('span',
+                                    {
+                                        'class': '_3mfro _3Fsn4 f-test-text-vacancy-item-company-name _9fXTd _2JVkc _3e53o _15msI'})
+                if company:
+                    company = company.text
+                city = elem.find('span',
+                                 {'class': '_3mfro f-test-text-company-item-location _9fXTd _2JVkc _3e53o'}).text.split(
+                    ' • ')[1]
+                compensation = elem.find('span',
+                                         {'class': '_3mfro _2Wp8I f-test-text-company-item-salary PlM3e _2JVkc _2VHxz'})
+                compensation_min, compensation_max, compensation_currency = \
+                    VacancyParserBase.convert_compensation(compensation)
+                vacancy_list_page.append(
+                    {
+                        'position': position,
+                        'company': company,
+                        'city': city,
+                        'compensation_min': compensation_min,
+                        'compensation_max': compensation_max,
+                        'compensation_currency': compensation_currency
+                    }
+                )
+            pprint(vacancy_list_page)
+            vacancy_list_all.extend(vacancy_list_page)
+            time.sleep(self.timer)
+        return vacancy_list_all
+
+
 if __name__ == '__main__':
     currency_dict = create_currency_dict()
-    hh_parser = VacancyParserHH()
-    hh_parser.to_dataframe(currency_dict=currency_dict)
+    parser = VacancyParserSJ(search_string='аналитик')
+    parser.to_dataframe(currency_dict=currency_dict)
