@@ -1,7 +1,7 @@
 from pprint import pprint
-from vacancy_parser import VacancyParserHH, VacancyParserSJ
-from bd_converters import VacancyMongoClient
-import bd_converters
+from vacancy.vacancy_parser import VacancyParserHH, VacancyParserSJ
+from vacancy.bd_converters import VacancyMongoClient
+import vacancy.bd_converters
 
 
 def main():

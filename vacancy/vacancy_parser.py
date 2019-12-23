@@ -7,9 +7,9 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from pprint import pprint
-from filters import filterHH, filterSJ
-from entity import Vacancy
-from bd_converters import VacancyMongoClient
+from vacancy.filters import filterHH, filterSJ
+from vacancy.entity import Vacancy
+from vacancy.bd_converters import VacancyMongoClient
 
 
 # Абстрактный класс парсеров, декларирующий обязательный интерфейс

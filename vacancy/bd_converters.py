@@ -2,10 +2,10 @@ from pprint import pprint
 import ssl
 import pymongo
 from pymongo.errors import DuplicateKeyError
-import passwords
+from vacancy.passwords import MONGO_PASS
 
 
-connection_str = f'mongodb+srv://KirillKras:{passwords.MONGO_PASS}' + \
+connection_str = f'mongodb+srv://KirillKras:{MONGO_PASS}' + \
                  '@testcluster-hcpdp.mongodb.net/test?retryWrites=true&w=majority'
 
 
