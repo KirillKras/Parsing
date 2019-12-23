@@ -24,6 +24,10 @@ class VacancyMongoClient(object):
     def find_all(self):
         return self.__collection.find()
 
+    def find_vacancy_gt(self, compensation: float):
+        assert compensation >= 0
+        return self.__collection.find({'min_compensation': {'$gt': compensation}})
+
     def insert_one(self, vacancy):
         self.__collection.insert_one(vacancy)
 
