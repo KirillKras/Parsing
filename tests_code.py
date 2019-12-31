@@ -5,8 +5,6 @@ from pprint import pprint
 from lxml import html
 from urllib3.util.url import parse_url
 
-print(datetime.datetime.fromtimestamp(1577362930))
-
 
 def mail():
     mail_url = 'https://news.mail.ru'
@@ -30,11 +28,12 @@ def mail():
             if response.ok:
                 root = html.fromstring(response.text)
                 source_xpath = root.xpath("//a[@class='article__param color_blue']/text()")
-                date = root.xpath("//time[@class=' js-ago']/@datetime")[0]
-                date = datetime.date.fromisoformat(date.split('T')[0])
+                date = root.xpath("//time[@class=' js-ago']/@datetime")
+                if date:
+                    date = date[0]
+                    date = datetime.date.fromisoformat(date.split('T')[0])
                 if source_xpath:
                     source = source_xpath[0]
-            time.sleep(1)
             print(source, name, date, link)
 
 def yandex():
@@ -97,4 +96,7 @@ def lenta():
             source = parse_url(link).hostname
             print(source, name, link, date)
 
+
+print(datetime.datetime.now())
 mail()
+print(datetime.datetime.now())
