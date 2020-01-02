@@ -24,7 +24,7 @@ filterYandex = Filter(
 filterMail = Filter(
     url="https://news.mail.ru",
     items= "(//span[@class='item__text'] | //span[@class='photo__title'])",
-    topic="/text()",
+    topic="./text()",
     link="ancestor::a[@href]/@href",
     source="//a[@class='article__param color_blue']/text()",
     date="//time[@class=' js-ago']/@datetime"
