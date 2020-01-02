@@ -128,9 +128,7 @@ class NewsMail(News):
 
     @date.setter
     def date(self, date):
-        if type(date) == datetime.datetime:
-            self._date = date
-        elif type(date) == str and 'T' in date:
+        if type(date) == str and 'T' in date:
             self._date = datetime.date.fromisoformat(date.split('T')[0])
         else:
             self._date = datetime.datetime.now().date()
