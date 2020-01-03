@@ -86,9 +86,3 @@ class ScraperMail(Scraper):
                                        connector=aiohttp.TCPConnector(ssl=False))
         async with client:
             await asyncio.gather(*[self.__aioget_news_page(client, link) for link in self.news_dict])
-
-
-
-if __name__ == '__main__':
-    for scraper in ScraperMail(), ScraperYandex(), ScraperLenta():
-        pprint(scraper.news_dict)
