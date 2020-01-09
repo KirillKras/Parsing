@@ -1,5 +1,5 @@
 from news_scraper.scraper import ScraperLenta, ScraperYandex, ScraperMail
-from news_scraper.bd_converters import NewsMongoClient
+from bd_converters import MongoClient
 
 
 def scraping_news(mongodb_client, yandex=True, mail=True, lenta=True):
@@ -15,5 +15,6 @@ def scraping_news(mongodb_client, yandex=True, mail=True, lenta=True):
 
 
 if __name__ == '__main__':
-    mongodb_client = NewsMongoClient()
-    scraping_news(mongodb_client)
+    news_mongo_db = MongoClient(index_id='link', db_name='NewsScraper',
+                                collection_name='newsCollection')
+    scraping_news(news_mongo_db)
