@@ -11,20 +11,20 @@ connection_str = f'mongodb+srv://KirillKras:{MONGO_PASS}' + \
 
 class MongoClient(object):
     def __init__(self, index_id, db_name, collection_name, conn_str=connection_str):
-        self._client = pymongo.MongoClient(conn_str, ssl_cert_reqs=ssl.CERT_NONE)
-        self._db = self._client[db_name]
-        self._collection = self._db[collection_name]
-        self._set_index(index_id)
+        self.__client = pymongo.MongoClient(conn_str, ssl_cert_reqs=ssl.CERT_NONE)
+        self.__db = self.__client[db_name]
+        self.__collection = self.__db[collection_name]
+        self.__set_index(index_id)
 
-    def _set_index(self, index_id):
-        if f'{index_id}_1' not in self._collection.index_information():
-            self._collection.create_index([(index_id, pymongo.ASCENDING)], unique=True)
+    def __set_index(self, index_id):
+        if f'{index_id}_1' not in self.__collection.index_information():
+            self.__collection.create_index([(index_id, pymongo.ASCENDING)], unique=True)
 
     def find_all(self):
-        return self._collection.find()
+        return self.__collection.find()
 
     def insert_one(self, row):
-        self._collection.insert_one(row)
+        self.__collection.insert_one(row)
 
     def insert_many(self, info_dict):
         for row in info_dict.values():
