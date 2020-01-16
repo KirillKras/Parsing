@@ -14,12 +14,16 @@ BOT_NAME = 'jobparser'
 SPIDER_MODULES = ['jobparser.spiders']
 NEWSPIDER_MODULE = 'jobparser.spiders'
 
+LOG_ENABLED = True
+LOG_LEVEL = 'DEBUG' #INFO ERROR
+#LOG_FILE = 'logs.txt'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'jobparser (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 ' \
+             '(KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
