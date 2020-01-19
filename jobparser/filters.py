@@ -49,7 +49,7 @@ filter_sprjob = FilterSJ(
     name='//h1[@class="_3mfro rFbjy s1nFK _2JVkc"]//text()',
     salary_min='//span[@class="_3mfro _2Wp8I ZON4b PlM3e _2JVkc"]//span[1]//text()',
     salary_max='//span[@class="_3mfro _2Wp8I ZON4b PlM3e _2JVkc"]//span[3]//text()',
-salary_currency_max_with='//span[@class="_3mfro _2Wp8I ZON4b PlM3e _2JVkc"]//span[4]//text()',
+    salary_currency_max_with='//span[@class="_3mfro _2Wp8I ZON4b PlM3e _2JVkc"]//span[4]//text()',
     salary_currency_max_without='//span[@class="_3mfro _2Wp8I ZON4b PlM3e _2JVkc"]//span[2]//text()',
     location='//span[@class="_6-z9f"]//text()',
 )
