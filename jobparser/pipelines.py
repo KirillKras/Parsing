@@ -1,10 +1,10 @@
 import datetime
 import requests
+import pymongo
+from pymongo.errors import DuplicateKeyError
 from bs4 import BeautifulSoup
 from jobparser.items import JobparserItem
 from jobparser.spiders.hhru import HhruSpider
-import pymongo
-from pymongo.errors import DuplicateKeyError
 
 
 # Define your item pipelines here
@@ -58,6 +58,7 @@ class JobparserPipeline(object):
 
     @staticmethod
     def __get_salary_value(salary_value, salary_currency, salary_unit):
+        salary_value = JobparserPipeline.__strip_non_ascii(salary_value)
         salary_currency = salary_currency if salary_currency in CURRENCY_DICT else 'RUB'
         if salary_value and salary_currency:
             salary_value = float(salary_value) * CURRENCY_DICT[salary_currency]
@@ -67,6 +68,13 @@ class JobparserPipeline(object):
         return None
 
     @staticmethod
-    def __set_index(collection, index_id: str):
+    def __strip_non_ascii(string: str) -> str:
+        if string:
+            stripped = (c for c in string if 0 < ord(c) < 127)
+            return ''.join(stripped)
+        return None
+
+    @staticmethod
+    def __set_index(collection: pymongo.collection, index_id: str):
         if f'{index_id}_1' not in collection.index_information():
             collection.create_index([(index_id, pymongo.ASCENDING)], unique=True)
