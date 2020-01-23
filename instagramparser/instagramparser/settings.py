@@ -14,12 +14,19 @@ BOT_NAME = 'instagramparser'
 SPIDER_MODULES = ['instagramparser.spiders']
 NEWSPIDER_MODULE = 'instagramparser.spiders'
 
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 ' \
+             '(KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
+
+
+LOG_ENABLED = True
+LOG_LEVEL = 'DEBUG' #INFO ERROR
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'instagramparser (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -46,15 +53,20 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'instagramparser.middlewares.InstagramparserSpiderMiddleware': 543,
-#}
+
+RETRY_HTTP_CODES = [429, ]
+
+# SPIDER_MIDDLEWARES = {
+#     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+#     'instagramparser.middlewares.TooManyRequestsRetryMiddleware': 100,
+# }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'instagramparser.middlewares.InstagramparserDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+   'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+   'instagramparser.middlewares.TooManyRequestsRetryMiddleware': 100,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -64,9 +76,13 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'instagramparser.pipelines.InstagramparserPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'instagramparser.pipelines.InstagramparserPipeline': None,
+   'instagramparser.pipelines.MongoPipeline': 200,
+}
+
+MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_DATABASE = 'insta_followers'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
