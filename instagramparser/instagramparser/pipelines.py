@@ -4,17 +4,24 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
+import scrapy
 import pymongo
 from pymongo.errors import DuplicateKeyError
+from scrapy.pipelines.images import ImagesPipeline
 import datetime
 
 
-class InstagramparserPipeline(object):
-    def process_item(self, item, spider):
-        name = spider.name
-        pass
-        return item
+class InstagramPhotoPipeline(ImagesPipeline):
+    def get_media_requests(self, item, info):
+        try:
+            yield scrapy.Request(item['avatar'])
+        except Exception as e:
+            print(e)
+
+    def item_completed(self, results, item, info):
+        if results:
+            return item
+
 
 
 class MongoPipeline(object):

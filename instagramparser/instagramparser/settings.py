@@ -14,12 +14,14 @@ BOT_NAME = 'instagramparser'
 SPIDER_MODULES = ['instagramparser.spiders']
 NEWSPIDER_MODULE = 'instagramparser.spiders'
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 ' \
-             '(KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) ' \
+             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15'
 
 
 LOG_ENABLED = True
 LOG_LEVEL = 'DEBUG' #INFO ERROR
+
+IMAGE_STORE = 'images'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -77,7 +79,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'instagramparser.pipelines.InstagramparserPipeline': None,
+   'instagramparser.pipelines.InstagramPhotoPipeline': None,
    'instagramparser.pipelines.MongoPipeline': 200,
 }
 
