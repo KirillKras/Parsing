@@ -6,7 +6,8 @@ import re
 from typing import List
 import scrapy
 from scrapy.http import HtmlResponse
-from instagramparser.items import InstagramparserItem, InstagramparserPhotoItem
+from instagramparser.items import InstagramparserItem, InstagramPhotoItem
+from scrapy.loader import ItemLoader
 
 
 class InstagramSpider(scrapy.Spider):
@@ -53,12 +54,6 @@ class InstagramSpider(scrapy.Spider):
     def parse_followers(self, response: HtmlResponse, user_vars: dict, user):
         data: dict = json.loads(response.body)
         followers = data.get('data').get('user').get('edge_followed_by').get('edges')
-        for follower in followers:
-            follower_name = follower.get('node').get('username')
-            if follower_name:
-                yield response.follow(f'{self.start_urls[0]}{follower_name}/?__a=1',
-                                      callback=self.get_avatar_hd,
-                                      cb_kwargs={'follower_name': follower_name})
         if followers:
             yield InstagramparserItem(
                 user=user,
@@ -69,17 +64,9 @@ class InstagramSpider(scrapy.Spider):
             yield response.follow(next_page, callback=self.parse_followers,
                                   cb_kwargs={'user_vars': user_vars, 'user': user})
 
-
     def fetch_csrf_token(self, response: HtmlResponse):
         matched = re.search(r'"csrf_token":"\w+"', response.text).group()
         return matched.split('\"')[3]
-
-    def get_avatar_hd(self, response: HtmlResponse, follower_name):
-        js_data = json.loads(response.body)
-        avatar_hd_url = js_data.get('graphql').get('user').get('profile_pic_url_hd')
-        if avatar_hd_url:
-            InstagramparserPhotoItem(follower_name=follower_name, avatar_hd_url=avatar_hd_url)
-
 
     def fetch_user_id(self, text, username):
         matched = re.search(r'{"id":"\d+","username":"%s"}' % username, text).group()

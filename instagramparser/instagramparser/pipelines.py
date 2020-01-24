@@ -7,20 +7,24 @@
 import scrapy
 import pymongo
 from pymongo.errors import DuplicateKeyError
+from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 import datetime
 
 
 class InstagramPhotoPipeline(ImagesPipeline):
     def get_media_requests(self, item, info):
-        try:
-            yield scrapy.Request(item['avatar'])
-        except Exception as e:
-            print(e)
+        for image_url in item['image_urls']:
+            try:
+                yield scrapy.Request(image_url)
+            except Exception as e:
+                print(e)
 
     def item_completed(self, results, item, info):
-        if results:
-            return item
+        file_paths = [x['path'] for ok, x in results if ok]
+        if not file_paths:
+            raise DropItem("Item contains no files")
+        return item
 
 
 
@@ -47,6 +51,9 @@ class MongoPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
+        if spider.name == 'instaphoto':
+            print(spider.name)
+            return item
         for user in item['followers']:
             user: dict = user.get('node')
             user['_id'] = user['id']

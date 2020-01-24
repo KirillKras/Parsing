@@ -15,14 +15,14 @@ SPIDER_MODULES = ['instagramparser.spiders']
 NEWSPIDER_MODULE = 'instagramparser.spiders'
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) ' \
-             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15'
-
+             'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 LOG_ENABLED = True
 LOG_LEVEL = 'DEBUG' #INFO ERROR
 
-IMAGE_STORE = 'images'
+IMAGES_STORE = '/Users/kosmosivanov/git-repo/Parsing/instagramparser/instagramparser/images'
 
+MEDIA_ALLOW_REDIRECTS = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'instagramparser (+http://www.yourdomain.com)'
@@ -31,15 +31,15 @@ IMAGE_STORE = 'images'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 6
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 8
+CONCURRENT_REQUESTS_PER_IP = 8
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -65,9 +65,10 @@ RETRY_HTTP_CODES = [429, ]
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
+
 DOWNLOADER_MIDDLEWARES = {
-   'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-   'instagramparser.middlewares.TooManyRequestsRetryMiddleware': 100,
+   'scrapy.downloadermiddlewares.retry.RetryMiddleware': 100,
+   'instagramparser.middlewares.TooManyRequestsRetryMiddleware': None,
 }
 
 # Enable or disable extensions
@@ -79,8 +80,8 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'instagramparser.pipelines.InstagramPhotoPipeline': None,
-   'instagramparser.pipelines.MongoPipeline': 200,
+   'instagramparser.pipelines.InstagramPhotoPipeline': 200,
+   'instagramparser.pipelines.MongoPipeline': 100,
 }
 
 MONGO_URI = 'mongodb://localhost:27017/'
