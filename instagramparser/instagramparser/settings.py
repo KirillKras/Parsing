@@ -18,7 +18,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) ' \
              'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 LOG_ENABLED = True
-LOG_LEVEL = 'DEBUG' #INFO ERROR
+LOG_LEVEL = 'ERROR' #INFO ERROR
 
 IMAGES_STORE = '/Users/kosmosivanov/git-repo/Parsing/instagramparser/instagramparser/images'
 
@@ -67,8 +67,8 @@ RETRY_HTTP_CODES = [429, ]
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 
 DOWNLOADER_MIDDLEWARES = {
-   'scrapy.downloadermiddlewares.retry.RetryMiddleware': 100,
-   'instagramparser.middlewares.TooManyRequestsRetryMiddleware': None,
+   'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+   'instagramparser.middlewares.TooManyRequestsRetryMiddleware': 100,
 }
 
 # Enable or disable extensions

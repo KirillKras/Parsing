@@ -26,6 +26,6 @@ if __name__ == '__main__':
     res = collection.find()
     usernames = [user.get('username') for user in res]
     process = CrawlerProcess(settings=crawler_settings)
-    #process.crawl(InstagramSpider, ['tarasen3306',], LOGIN, PSWD)
-    process.crawl(InstaphotoSpider, usernames)
+    process.crawl(InstagramSpider, ['almostmarried_agency', 'boyarovweddings', ], LOGIN, PSWD)
+    #process.crawl(InstaphotoSpider, usernames)
     process.start()

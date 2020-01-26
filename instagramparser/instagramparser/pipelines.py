@@ -14,6 +14,8 @@ import datetime
 
 class InstagramPhotoPipeline(ImagesPipeline):
     def get_media_requests(self, item, info):
+        if 'image_urls' not in item:
+            return
         for image_url in item['image_urls']:
             try:
                 yield scrapy.Request(image_url)
@@ -56,11 +58,12 @@ class MongoPipeline(object):
             return item
         for user in item['followers']:
             user: dict = user.get('node')
-            user['_id'] = user['id']
+            user['_id'] = int(user['id'])
             #del user['id']
             user['date'] = str(datetime.datetime.now().date())
             try:
                 self.db[item['user']].insert_one(user)
+                print(f'Добавлен {user["username"]} в {item["user"]}')
             except DuplicateKeyError:
                 print('Дубликат')
 

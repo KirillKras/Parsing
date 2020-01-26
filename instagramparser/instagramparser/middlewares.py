@@ -23,12 +23,14 @@ class TooManyRequestsRetryMiddleware(RetryMiddleware):
         if request.meta.get('dont_retry', False):
             return response
         elif response.status == 429:
+            print('Have 429 error')
             self.crawler.engine.pause()
             time.sleep(120)
             self.crawler.engine.unpause()
             reason = response_status_message(response.status)
             return self._retry(request, reason, spider) or response
         elif response.status in self.retry_http_codes:
+            print(response.status)
             reason = response_status_message(response.status)
             return self._retry(request, reason, spider) or response
         return response
