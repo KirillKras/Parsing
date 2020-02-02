@@ -14,6 +14,7 @@ class TooManyRequestsRetryMiddleware(RetryMiddleware):
     def __init__(self, crawler):
         super(TooManyRequestsRetryMiddleware, self).__init__(crawler.settings)
         self.crawler = crawler
+        self.sleep_429 = 120
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -25,7 +26,8 @@ class TooManyRequestsRetryMiddleware(RetryMiddleware):
         elif response.status == 429:
             print('Have 429 error')
             self.crawler.engine.pause()
-            time.sleep(120)
+            time.sleep(self.sleep_429)
+            #self.sleep_429 += 60
             self.crawler.engine.unpause()
             reason = response_status_message(response.status)
             return self._retry(request, reason, spider) or response
@@ -33,6 +35,8 @@ class TooManyRequestsRetryMiddleware(RetryMiddleware):
             print(response.status)
             reason = response_status_message(response.status)
             return self._retry(request, reason, spider) or response
+        else:
+            print(response)
         return response
 
 

@@ -9,6 +9,15 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import os
+from urllib.parse import quote_plus as quote
+from dotenv import load_dotenv
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+print(dotenv_path, os.getenv('PSWD'))
+
 BOT_NAME = 'instagramparser'
 
 SPIDER_MODULES = ['instagramparser.spiders']
@@ -83,9 +92,17 @@ ITEM_PIPELINES = {
    'instagramparser.pipelines.InstagramPhotoPipeline': 200,
    'instagramparser.pipelines.MongoPipeline': 100,
 }
-
-MONGO_URI = 'mongodb://localhost:27017/'
 MONGO_DATABASE = 'insta_followers'
+SSL_CA_CERTS = '/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt'
+MONGO_URI = 'mongodb://{user}:{pw}@{hosts}/?replicaSet={rs}&authSource={auth_src}'.format(
+    user=quote(os.getenv('MONGO_USER')),
+    pw=quote(os.getenv('PSWD')),
+    hosts=','.join([
+        'rc1a-xg8zpggvbcedkqrm.mdb.yandexcloud.net:27018'
+    ]),
+    rs='rs01',
+    auth_src=MONGO_DATABASE)
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
